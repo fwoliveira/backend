@@ -1,7 +1,9 @@
 const express = require('express');
 const app = express();
-const port = 4500;
+
 const User = require('./models/User');
+const bcrypt = require('bcryptjs');
+require('dotenv').config();
 
 
 app.use(express.json());
@@ -61,7 +63,12 @@ app.get('/users/:id', async (req, res) => {
 
 app.post("/user", async (req, res) => {
     // const{ name, email, gender, password } = req.body;
-    await User.create(req.body)
+    var dados = req.body;
+    console.log(dados);
+    dados.password = await bcrypt.hash(dados.password,8);
+    console.log(dados.password);
+
+    await User.create(dados)
     .then(()=>{
         return res.json({
             erro: false,
@@ -108,9 +115,52 @@ app.put("/user",async (req, res) => {
  });
 
 
+app.get("/login", async (req, res)=>{
+    const user = await User.findOne({
+        attributes: ['id','name', 'email','gender','password'],
+        where: {
+            email: req.body.email
+        }
+})
+if(user === null){
+    return res.status(400).json({
+        erro: true,
+        mensagem: "Erro: Usuário ou senha incontrado"
+    })
+}
+if(!(await bcrypt.compare(req.body.password, user.password))){
+    return res.status(400).json({
+        erro: true,
+        mensagem:"Erro: Usuário ou senha incorreta!!!"
+    })
+}
+return res.json({
+    erro:false,
+    mensagem: "Login realizado com sucesso",
+    user
+})
+});
 
-app.listen(port,() => {
-    console.log(`Servico eniciado na porta ${port} http://localhost:${port}`);
+app.put('/user-senha', async (req, res) => {
+    const {id, password} = req.body;
+    var senhaCrypt= await bcrypt.hash(password, 8);
+
+    await User.update({password: senhaCrypt}, {where: {id: id}})
+    .then(()=> {
+        return res.json({
+            erro: false,
+            mensagem:"Senha edita com sucesso!"
+        });
+    }).catch( (err) => {
+        return res.status(400).json({
+            erro: true,
+            mensagem:`Erro: ${err}... A senha não foi alterada`
+        })
+    })
+})
+
+app.listen(process.env.PORT,() => {
+    console.log(`Servico eniciado na porta ${process.env.PORT} http://localhost:${process.env.PORT}`);
 });
 
 app.listen(6333);
