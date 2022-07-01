@@ -12,7 +12,7 @@ module.exports = function sendMail(to,cc,subject,html){
     })
 
     const message = {
-        from: 'fwoliveira044@gmail.com',
+        from:'contato@jsfernando.com',
         to,
         cc,
         bcc: process.env.SMTP_USERNAMEACCOUNT,

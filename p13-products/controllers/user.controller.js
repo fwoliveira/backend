@@ -1,27 +1,9 @@
-const express = require('express');
-const app = express();
-const User = require('./models/User');
+const User = require('../models/user');
 const bcrypt = require('bcryptjs');
-require('dotenv').config();
-const sendMail = require('./providers/mailProvider');
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-
-app.get('/', function (request, response) {
-    response.send('Serviço API Rest iniciada...');
-});
-
-
-app.get("/users", async (req, res) => {
+const sendMail = require('../providers/mailProvider');
+exports.findAll = async (req, res) => {
     await User.findAll({
-        attributes: ['id','name', 'email','gender'],
+        attributes: ['id','name', 'email','gender','password'],
         order:[['name','ASC']]
     })
     .then( (users) => {
@@ -35,9 +17,9 @@ app.get("/users", async (req, res) => {
             mensagem: `Erro: ${err} ou Nehum Usuario encontrado!!!`
         });
     });
-});
+};
 
-app.get('/users/:id', async (req, res) => {
+exports.findOne = async (req, res) => {
     const { id } = req.params;
     try {
         // await User.findAll({ where: { id: id }})
@@ -58,9 +40,9 @@ app.get('/users/:id', async (req, res) => {
             mensagem: `Erro: ${err}`
         })
     }
-});
+};
 
-app.post("/user", async (req, res) => {
+exports.create = async (req, res) => {
 
     var dados = req.body;
     dados.password = await bcrypt.hash(dados.password, 8);
@@ -106,9 +88,9 @@ app.post("/user", async (req, res) => {
             mensagem: `Erro: Usuário não cadastrado... ${err}`
         })
     })
-});
+};
 
-app.put("/user",async (req, res) => {
+exports.update = async (req, res) => {
     const{ id} = req.body;
 
     await User.update(req.body,{ where: { id}})
@@ -123,8 +105,9 @@ app.put("/user",async (req, res) => {
             mensagem:`Erro: Usuario não alterado ...${err}`
         })
     })
-});
- app.delete("/user/:id",async (req, res)=>{
+};
+
+exports.delete = async (req, res)=>{
      const {id} = req.params;
      await User.destroy({where: { id}})
      .then(()=>{
@@ -139,54 +122,4 @@ app.put("/user",async (req, res) => {
              mensagem: `Erro: ${err} Usuário não apagado...`
          });
      });
- });
-
-
-app.get("/login", async (req, res)=>{
-    const user = await User.findOne({
-        attributes: ['id','name', 'email','gender','password'],
-        where: {
-            email: req.body.email
-        }
-})
-if(user === null){
-    return res.status(400).json({
-        erro: true,
-        mensagem: "Erro: Usuário ou senha incontrado"
-    })
-}
-if(!(await bcrypt.compare(req.body.password, user.password))){
-    return res.status(400).json({
-        erro: true,
-        mensagem:"Erro: Usuário ou senha incorreta!!!"
-    })
-}
-return res.json({
-    erro:false,
-    mensagem: "Login realizado com sucesso",
-    user
-})
-});
-
-app.put('/user-senha', async (req, res) => {
-    const {id, password} = req.body;
-    var senhaCrypt= await bcrypt.hash(password, 8);
-
-    await User.update({password: senhaCrypt}, {where: {id: id}})
-    .then(()=> {
-        return res.json({
-            erro: false,
-            mensagem:"Senha edita com sucesso!"
-        });
-    }).catch( (err) => {
-        return res.status(400).json({
-            erro: true,
-            mensagem:`Erro: ${err}... A senha não foi alterada`
-        })
-    })
-})
-
-app.listen(process.env.PORT,() => {
-    console.log(`Servico eniciado na porta ${process.env.PORT} http://localhost:${process.env.PORT}`);
-});
-
+ };
