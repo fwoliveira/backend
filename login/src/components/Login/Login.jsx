@@ -4,9 +4,12 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { UserCircle } from "phosphor-react";
 import api from '../../services/api';
+import { useHistory } from 'react-router-dom'
 import "./styles.css";
 
 export function Login() {
+
+  const history = useHistory();
 
   const [user, setUser] = useState({
     email: '',
@@ -31,9 +34,11 @@ export function Login() {
       const headers = {
         content_type: 'application/json'
       }
+
       setStatus({
         loading: true
       })
+
       await api.post('/login', user, {headers})
       .then((response) =>{
         // console.log(response)
@@ -42,20 +47,23 @@ export function Login() {
           mensagem: response.data.mensagem,
           loading: false
         })
+        setStatus({loading: false});
+        localStorage.setItem('token', JSON.stringify(response.data.token));
+        return history.push('/dashboard');
+
       }).catch((error) =>{
         setStatus({
-            type: 'error',
-            mensagem: 'erro tente mais tarde!'
-          })
-
-          if(error.response){
+          type: 'error',
+          mensagem: 'erro: tente mais tarde!',
+        })
+        if(error.response){
           // console.log(error.response)
           setStatus({
             type: 'error',
             mensagem: error.response.data.mensagem,
+            loading: false
           })
         }
-       
       })
     }
 
@@ -90,9 +98,9 @@ export function Login() {
             placeholder="Digite sua senha"
           />
         </Form.Group>
-        <Button variant="dark" type="submit">
-          Login
-        </Button>
+        {status.loading ? <Button variant="dark" disabled type="submit">Acessando</Button>
+        : <Button variant="dark"  type="submit">Acessar</Button>}
+       
       </Form>
       {/* </Container> */}
     </div>
