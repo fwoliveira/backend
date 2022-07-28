@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 // import Container from "react-bootstrap/container";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
@@ -6,10 +6,14 @@ import { UserCircle } from "phosphor-react";
 import api from '../../services/api';
 import { useHistory } from 'react-router-dom'
 import "./styles.css";
+import { Context } from "../../Context/AuthContext";
 
 export function Login() {
 
   const history = useHistory();
+  
+    const {authenticated , sigIn }= useContext(Context);
+    console.log(`Situação do usuario na pagina login: ${authenticated}`);
 
   const [user, setUser] = useState({
     email: '',
@@ -49,6 +53,7 @@ export function Login() {
         })
         setStatus({loading: false});
         localStorage.setItem('token', JSON.stringify(response.data.token));
+        sigIn(true);
         return history.push('/dashboard');
 
       }).catch((error) =>{
