@@ -10,7 +10,7 @@ function AuthProvider ({children}){
     useEffect( () => {
         const getLogin =  () =>{
             const token = localStorage.getItem('token');
-            if (token){
+            if (token && validetedToken()){
                 api.defaults.headers.Authorization = `Bearer ${(token)}`;
                 setAuthenticated(true);
             }
@@ -19,6 +19,22 @@ function AuthProvider ({children}){
 
         getLogin();
     },[]);
+
+    const validetedToken = async () =>{
+        const valueToken = localStorage.getItem('token')
+        const headers={
+            'headers': {'Authorization': 'Bearer '+ valueToken},
+        }
+        await api.get("/validarToken",headers)
+        .then(()=>{
+            return true
+        }).catch(() =>{
+            setAuthenticated(false);
+            localStorage.removeItem('token');
+            api.defaults.headers.Authorization = undefined;
+            return false;
+        })
+    }
 
     function sigIn(state){
         setAuthenticated(true)

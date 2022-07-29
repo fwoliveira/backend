@@ -52,7 +52,7 @@ export function Login() {
           loading: false
         })
         setStatus({loading: false});
-        localStorage.setItem('token', JSON.stringify(response.data.token));
+        localStorage.setItem('token', (response.data.token));
         sigIn(true);
         return history.push('/dashboard');
 
