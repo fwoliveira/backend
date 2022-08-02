@@ -1,7 +1,7 @@
 import React,{useState,useEffect}from "react";
 import { Link } from "react-router-dom";
 import api from '../../services/api';
-
+import "./styles.css";
 
 export const ListaUsuarios = () => {
     const[data, setData] = useState([]);
@@ -37,21 +37,26 @@ export const ListaUsuarios = () => {
    
     return (
         <>
-        <h1>usuarios</h1>
-        <ul>
+        
+        <div className="heder1">
+            <h1>usuarios</h1>
+        <ul className="heder">
         <li>
             <Link to="/dashboard">dashboard</Link>
         </li>
         <li>
             <Link to="/usuarios">usuarios</Link>
         </li>
-
        </ul>
+       </div >
+      
        {data.map(user =>(
-        <div key={user.id}>
+        <div className="table">
+            <div key={user.id}>
             <div> {user.name} </div>
             <div> {user.id} </div>
             <div> {user.gender}</div>
+        </div>
 <hr />
         </div>
        ))}

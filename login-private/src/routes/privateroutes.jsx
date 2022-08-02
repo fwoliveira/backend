@@ -2,8 +2,9 @@ import React, {useContext} from "react";
 import{Switch, Route, Redirect} from "react-router-dom";
 import { Login } from "../components/Login/Login";
 import { Context } from "../Context/AuthContext";
-import {Dashboard} from "../page/Dashboard/index"
-import {ListaUsuarios} from "../page/Usuario/listaUsuarios"
+import {Dashboard} from "../page/Dashboard/index";
+import {ListaUsuarios} from "../page/Usuario/listaUsuarios";
+import {UsuariosForm} from "../page/Usuarios-forms/Usuarios-form";
 
 
 
@@ -21,7 +22,9 @@ export default function PrivateRoute(){
         <Switch>
          <CustomRoute exact path="/" component={Login} />
          <CustomRoute isPrivate  path="/dashboard" component={Dashboard} />
+         <CustomRoute isPrivate  path="/usuarios/novo" component={UsuariosForm} />
          <CustomRoute isPrivate  path="/usuarios" component={ListaUsuarios} />
+         
         </Switch>
     )
 }

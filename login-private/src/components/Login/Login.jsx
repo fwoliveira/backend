@@ -2,10 +2,11 @@ import React, { useState, useContext } from "react";
 // import Container from "react-bootstrap/container";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
+import "./styles.css";
 import { UserCircle } from "phosphor-react";
 import api from '../../services/api';
 import { useHistory } from 'react-router-dom'
-import "./styles.css";
+
 import { Context } from "../../Context/AuthContext";
 
 export function Login() {
