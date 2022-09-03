@@ -33,7 +33,7 @@ const User = db.define('william_users',{
 });
 
 //criar tabela com sequelize_scope_error_default
-//user.sync();
+//User.sync();
 //excluir a tabela e criar novamente
 //User.sync({force:true});
 //verificar se algum diferença na tabela , realiza alteracao

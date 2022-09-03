@@ -25,9 +25,9 @@ const categories  = db.define('william_categories',{
 });
 
 //criar tabela com sequelize_scope_error_default
-//Categories.sync();
+//categories.sync();
 //excluir a tabela e criar novamente
-//Categories.sync({force:true});
+//categories.sync({force:true});
 //verificar se algum diferença na tabela , realiza alteracao
 // Categories.sync({alter: true});
 //cadastrar registro no banco de dados

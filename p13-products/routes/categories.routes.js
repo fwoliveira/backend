@@ -1,5 +1,6 @@
 const categoriesRoutes = require('express').Router();
 const categories = require('../controllers/categories.controller');
+const { validarToken } = require('../middlewares/Auth');
 
 categoriesRoutes.get("/all",categories.findAll);
 

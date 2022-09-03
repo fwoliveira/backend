@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/fwoliveira/backend/issues"
   },
-  "homepage": "https://github.com/fwoliveira/backend#readme"
+  "homepage": "https://github.com/fwoliveira/backend#readme",
+  "dependencies": {
+    "history": "^4.10.1"
+  }
 }

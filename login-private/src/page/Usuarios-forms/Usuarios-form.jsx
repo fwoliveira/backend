@@ -1,4 +1,4 @@
-import React , {useState} from "react";
+import React , {useState, useEffect} from "react";
 import api from '../../services/api'
 import {Link, useHistory} from 'react-router-dom';
 import Button from "react-bootstrap/Button";
@@ -12,29 +12,77 @@ const initialValue = {
     password:'',
 }
  
-export const UsuariosForm = () => {
+export const UsuariosForm = (props) => {
     const history = useHistory();
-    const[values, setValues] = useState(initialValue);
+    const [id]= useState(props.match.params.id);
+    console.log(id);
+    const[value, setValue] = useState(initialValue);
     const[acao,setAcao] = useState('Novo');
     const [status, setStatus] = useState({
         type: '',
         mensagem:'',
         loading: false
     }) 
-    const valorInput = e => setValues({
-        ... values,
+    const valorInput = e => setValue({
+        ... value,
         [e.target.name]: e.target.value
     })
+    useEffect(() => {
+
+      const getUser = async () => {
+        
+        const headers={
+          'headers': {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer '+ localStorage.getItem('token')}
+      }
+        await api.get("/users/"+ id,headers)
+        .then((response) => {
+          console.log(response);
+          if(response.data.users){
+            setValue(response.data.users);
+            setAcao('Editar');
+          }else{
+            setStatus({
+              type: 'warning',
+              mensagem:'Usuário nao encontrado'
+            })
+          }
+            // setData(response.data.users)
+
+        }).catch((err) => {
+            if(err.response){
+                setStatus({ 
+                     type: 'error',
+                     mensagem: err.response.data.mensagem
+                })
+            }else{
+                setStatus({ 
+                    type: 'error',
+                    mensagem: 'Erro: Tente mais tarde!'
+                })
+            }
+        })
+    }
+   if(id)getUser();
+    },[id]);
+        
+    
     const formSubmit =  async e => {
         e.preventDefault();
         setStatus({loading: true});
+
+        const valueToken = localStorage.getItem('token');
+        
     
     const headers={
             'headers': {
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer '+ localStorage.getItem('token')}
         }
-        await api.post("/user",values,headers)
+        if(!id){
+
+        await api.post("/user",value,headers)
         .then( (response) =>{
             console.log(response);
             setStatus({loading: false})
@@ -55,7 +103,30 @@ export const UsuariosForm = () => {
             }
         } )
      
-    }
+    } else {
+
+    await api.put("/user",value,headers)
+    .then( (response) =>{
+        console.log(response);
+        setStatus({loading: false})
+        return history.push('/usuarios')
+    }).catch((err) =>{
+        if(err.response){
+            setStatus({
+                type: 'error',
+                mensagem: err.response.data.mensagem,
+                loading: false
+            })
+        }else{
+            setStatus({
+                type: 'error',
+                mensagem: 'Erro: tente mais tarde!',
+                loading: false
+            })
+        }
+    } )}
+ 
+}
     return (
         <>
         <div className="box">
@@ -72,6 +143,7 @@ export const UsuariosForm = () => {
         <Form.Group className="mb-3" controlId="formBasicName">
           <Form.Label>Nome:</Form.Label>
           <Form.Control
+          value={value.name}
             type="name"
             name="name"
             onChange={valorInput}
@@ -82,12 +154,14 @@ export const UsuariosForm = () => {
         <Form.Group className="mb-3" controlId="formBasicEmail">
           <Form.Label className="FormLabel"> Email: </Form.Label>
           <Form.Control
+            value={value.email}
             type="email"
             name="email"
             onChange={valorInput}
             placeholder="Digite seu e-mail"
           />
         </Form.Group>
+        {!id &&
         <Form.Group className="mb-3" controlId="formBasicPassword">
           <Form.Label>Senha:</Form.Label>
           <Form.Control
@@ -96,7 +170,8 @@ export const UsuariosForm = () => {
             onChange={valorInput}
             placeholder="Digite sua senha"
           />
-        </Form.Group>
+        
+        </Form.Group>  }
         {status.loading 
         ? <Button variant="dark" disabled type="submit">Enviando</Button>
         : <Button variant="dark"  type="submit">Enviar</Button>}

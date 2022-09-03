@@ -8,10 +8,10 @@ exports.findAll = async (req, res) => {
         attributes: ['id','name', 'description',],
         order:[['name','ASC']]
     })
-    .then( (users) => {
+    .then( (categories) => {
         return res.json({
             erro:false,
-            users
+            categories
         });
     }).catch( (err) => {
         return res.status(400).json({
@@ -24,9 +24,9 @@ exports.findAll = async (req, res) => {
 exports.findOne = async (req, res) => {
     const { id } = req.params;
     try {
-        // await Categories.findAll({ where: { id: id }})
-        const users = await categories.findByPk(id);
-        if(!users) {
+        // await categories.findAll({ where: { id: id }})
+        const categories = await categories.findByPk(id);
+        if(!categories) {
             return res.status(400).json({
                 erro: true,
                 mensagem: "Erro Nehum categoria encontrado!"
@@ -34,7 +34,7 @@ exports.findOne = async (req, res) => {
         }
         res.status(200).json({
             erro: false,
-            users
+            categories
         })
     }catch (err){
         res.status(400).json({
@@ -63,7 +63,7 @@ exports.create = async (req, res) => {
 exports.update =async (req, res) => {
     const{ id} = req.body;
 
-    await categories.update(req.body,{ where: { id}})
+    await categories.update(req.body,{ where: {id}})
     .then(()=>{
         return res.json({
             erro:false,
@@ -79,7 +79,7 @@ exports.update =async (req, res) => {
 
 exports.delete = async (req, res)=>{
      const {id} = req.params;
-     await categories.destroy({where: { id}})
+     await categories.destroy({where: {id}})
      .then(()=>{
          return res.json({
              erro:false,

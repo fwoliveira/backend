@@ -23,6 +23,7 @@ export default function PrivateRoute(){
          <CustomRoute exact path="/" component={Login} />
          <CustomRoute isPrivate  path="/dashboard" component={Dashboard} />
          <CustomRoute isPrivate  path="/usuarios/novo" component={UsuariosForm} />
+         <CustomRoute isPrivate  path="/usuarios/editar/:id" component={UsuariosForm} />
          <CustomRoute isPrivate  path="/usuarios" component={ListaUsuarios} />
          
         </Switch>
